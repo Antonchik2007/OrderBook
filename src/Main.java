@@ -2,7 +2,7 @@ public class Main {
     public static void main(String[] args) {
         OrderBook book = new OrderBook();
 
-        long a = book.add(Side.BUY, 100, 10);
+        long a = book.add(Side.BUY, 100, 10).orderId();
         book.add(Side.BUY, 99, 5);
         book.add(Side.SELL, 102, 7);
         System.out.println("best bid " + book.bestBid() + ", best ask " + book.bestAsk());
@@ -11,5 +11,9 @@ public class Main {
         System.out.println("after cancel: best bid " + book.bestBid());
 
         System.out.println("cancel unknown id: " + book.cancel(999));
+
+        AddResult r = book.add(Side.SELL, 99, 3);
+        System.out.println(r.trades());
+        System.out.println("best bid " + book.bestBid() + ", best ask " + book.bestAsk());
     }
 }

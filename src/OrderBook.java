@@ -1,5 +1,7 @@
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.TreeMap;
 
 public class OrderBook {
@@ -18,14 +20,50 @@ public class OrderBook {
         return asks.isEmpty() ? NO_PRICE : asks.firstKey();
     }
 
-    public long add(Side side, int price, int quantity) {
+    public AddResult add(Side side, int price, int quantity) {
         if (price <= 0 || quantity <= 0) {
             throw new IllegalArgumentException("price and quantity must be positive");
         }
         Order order = new Order(nextId++, side, price, quantity);
+        List<Trade> trades = new ArrayList<>();
+        match(order, trades);
+        if (order.remaining > 0){
+            rest(order);
+        }
 
-        rest(order);
-        return order.id;
+        return new AddResult(order.id, trades);
+    }
+
+    private void match(Order taker, List<Trade> trades){
+        TreeMap<Integer, PriceLevel> opposite = (taker.side == Side.BUY) ? asks : bids; 
+
+        while (taker.remaining > 0 && !opposite.isEmpty()){
+            PriceLevel level = opposite.firstEntry().getValue();
+            if(!crosses(taker, level.price)){
+                break;
+            }
+
+            Order maker = level.head;
+            int quantity = Math.min(taker.remaining, maker.remaining);
+            trades.add(new Trade(maker.id, taker.id, level.price, quantity));
+            taker.remaining -= quantity;
+            maker.remaining -= quantity;
+            
+            if (maker.remaining == 0){
+                level.remove(maker);
+                orders.remove(maker.id);
+                if (level.isEmpty()){
+                    opposite.remove(level.price);
+                }
+            }
+        }
+
+    }
+
+    private boolean crosses (Order taker, int restingPrice){
+        return (taker.side == Side.BUY) 
+            ? taker.price >= restingPrice
+            : taker.price <= restingPrice;
     }
 
     private void rest(Order order) {

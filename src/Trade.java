@@ -1,1 +1,1 @@
-public record Trade(long makerId, long takerID, int price, int quantity){}
+public record Trade(long makerId, long takerId, int price, int quantity){}

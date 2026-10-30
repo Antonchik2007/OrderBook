@@ -1,0 +1,12 @@
+[0.005s][info][gc] Using G1
+[0.105s][info][gc] GC(0) Pause Young (Normal) (G1 Evacuation Pause) 55M->11M(258M) 4.375ms
+[0.166s][info][gc] GC(1) Pause Young (Normal) (G1 Evacuation Pause) 125M->25M(258M) 7.809ms
+[0.221s][info][gc] GC(2) Pause Young (Normal) (G1 Evacuation Pause) 163M->42M(258M) 10.989ms
+[0.268s][info][gc] GC(3) Pause Young (Normal) (G1 Evacuation Pause) 182M->60M(258M) 8.123ms
+[0.318s][info][gc] GC(4) Pause Young (Normal) (G1 Evacuation Pause) 200M->78M(534M) 7.562ms
+[0.450s][info][gc] GC(5) Pause Young (Normal) (G1 Evacuation Pause) 388M->112M(534M) 10.658ms
+[0.550s][info][gc] GC(6) Pause Young (Normal) (G1 Evacuation Pause) 398M->150M(534M) 14.521ms
+[0.650s][info][gc] GC(7) Pause Young (Normal) (G1 Evacuation Pause) 444M->186M(534M) 13.648ms
+median of 10 runs: 500000 orders in 0.043 s
+11757870 orders/sec, 9150327 trades/sec (389115 trades)
+fastest 0.030 s, slowest 0.045 s

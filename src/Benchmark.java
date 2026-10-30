@@ -43,7 +43,8 @@ public class Benchmark {
         OrderBook book = new OrderBook();
         long trades = 0;
         for (int i = 0; i < N; i++) {
-            trades += book.add(sides[i], prices[i], quantities[i]).trades().size();
+            book.add(sides[i], prices[i], quantities[i]);
+            trades += book.lastTrades().size();
         }
         return trades;
     }

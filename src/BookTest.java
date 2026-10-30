@@ -25,8 +25,8 @@ public class BookTest {
     static void noCross() {
         OrderBook book = new OrderBook();
         book.add(Side.BUY, 100, 10);
-        AddResult r = book.add(Side.SELL, 101, 5);
-        check(r.trades().isEmpty(), "noCross: no trades");
+        book.add(Side.SELL, 101, 5);
+        check(book.lastTrades().isEmpty(), "noCross: no trades");
         check(book.bestBid() == 100, "noCross: best bid");
         check(book.bestAsk() == 101, "noCross: best ask");
     }
@@ -35,8 +35,8 @@ public class BookTest {
     static void fullFill() {
         OrderBook book = new OrderBook();
         book.add(Side.BUY, 100, 10);
-        AddResult r = book.add(Side.SELL, 80, 10);
-        check(r.trades().equals(List.of(new Trade(1, 2, 100, 10))), "fullFill: trades at resting price");
+        book.add(Side.SELL, 80, 10);
+        check(book.lastTrades().equals(List.of(new Trade(1, 2, 100, 10))), "fullFill: trades at resting price");
         check(book.bestBid() == OrderBook.NO_PRICE, "fullFill: bids empty");
         check(book.bestAsk() == OrderBook.NO_PRICE, "fullFill: asks empty");
         check(!book.cancel(1), "fullFill: filled order can't be cancelled");
@@ -46,13 +46,13 @@ public class BookTest {
     static void partialFillMakerRests() {
         OrderBook book = new OrderBook();
         book.add(Side.BUY, 100, 10);
-        AddResult r = book.add(Side.SELL, 90, 5);
-        check(r.trades().equals(List.of(new Trade(1, 2, 100, 5))), "partialFillMakerRests: trades");
+        book.add(Side.SELL, 90, 5);
+        check(book.lastTrades().equals(List.of(new Trade(1, 2, 100, 5))), "partialFillMakerRests: trades");
         check(book.bestBid() == 100, "partialFillMakerRests: maker still resting at 100");
         check(book.bestAsk() == OrderBook.NO_PRICE, "partialFillMakerRests: taker fully filled, no asks");
 
-        AddResult r2 = book.add(Side.SELL, 100, 5);
-        check(r2.trades().equals(List.of(new Trade(1, 3, 100, 5))), "partialFillMakerRests: maker had exactly 5 left");
+        book.add(Side.SELL, 100, 5);
+        check(book.lastTrades().equals(List.of(new Trade(1, 3, 100, 5))), "partialFillMakerRests: maker had exactly 5 left");
         check(book.bestBid() == OrderBook.NO_PRICE, "partialFillMakerRests: bids empty after second fill");
     }
 
@@ -60,8 +60,8 @@ public class BookTest {
     static void partialFillTakerRests() {
         OrderBook book = new OrderBook();
         book.add(Side.BUY, 100, 5);
-        AddResult r = book.add(Side.SELL, 90, 10);
-        check(r.trades().equals(List.of(new Trade(1, 2, 100, 5))), "partialFillTakerRests: trades");
+        book.add(Side.SELL, 90, 10);
+        check(book.lastTrades().equals(List.of(new Trade(1, 2, 100, 5))), "partialFillTakerRests: trades");
         check(book.bestBid() == OrderBook.NO_PRICE, "partialFillTakerRests: bids empty");
         check(book.bestAsk() == 90, "partialFillTakerRests: remainder rests at its own price");
     }
@@ -72,18 +72,18 @@ public class BookTest {
         book.add(Side.BUY, 100, 10);
         book.add(Side.BUY, 100, 5);
         book.add(Side.BUY, 95, 10);
-        AddResult r = book.add(Side.SELL, 90, 18);
+        book.add(Side.SELL, 90, 18);
         List<Trade> expected = List.of(
             new Trade(1, 4, 100, 10),
             new Trade(2, 4, 100, 5),
             new Trade(3, 4, 95, 3)
         );
-        check(r.trades().equals(expected), "sweep: trades in price-time order");
+        check(book.lastTrades().equals(expected), "sweep: trades in price-time order");
         check(book.bestBid() == 95, "sweep: best bid");
         check(book.bestAsk() == OrderBook.NO_PRICE, "sweep: asks empty");
 
-        AddResult r2 = book.add(Side.SELL, 95, 7);
-        check(r2.trades().equals(List.of(new Trade(3, 5, 95, 7))), "sweep: order 3 had exactly 7 left");
+        book.add(Side.SELL, 95, 7);
+        check(book.lastTrades().equals(List.of(new Trade(3, 5, 95, 7))), "sweep: order 3 had exactly 7 left");
         check(book.bestBid() == OrderBook.NO_PRICE, "sweep: bids empty after");
     }
 
@@ -93,8 +93,8 @@ public class BookTest {
         book.add(Side.SELL, 100, 10);
         book.add(Side.SELL, 100, 10);
         check(book.cancel(1), "cancelThenMatch: cancel resting order");
-        AddResult r = book.add(Side.BUY, 120, 15);
-        check(r.trades().equals(List.of(new Trade(2, 3, 100, 10))), "cancelThenMatch: skips cancelled, matches next in line");
+        book.add(Side.BUY, 120, 15);
+        check(book.lastTrades().equals(List.of(new Trade(2, 3, 100, 10))), "cancelThenMatch: skips cancelled, matches next in line");
         check(book.bestBid() == 120, "cancelThenMatch: remainder rests at 120");
         check(book.bestAsk() == OrderBook.NO_PRICE, "cancelThenMatch: asks empty");
     }
